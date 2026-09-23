@@ -189,9 +189,8 @@ def ask_leno(user_message):
         return answer
 
    except Exception as error:
-    return (
-        f"AI model error: {type(error).__name__}: {error}"
-    )
+    return f"AI model error: {type(error).__name__}: {error}"
+    
 
 # --------------------------------------------------
 # SPEECH TO TEXT
