@@ -188,12 +188,10 @@ def ask_leno(user_message):
 
         return answer
 
-    except Exception as error:
-
-        return (
-            "I couldn't connect to my AI model right now."
-        )
-
+   except Exception as error:
+    return (
+        f"AI model error: {type(error).__name__}: {error}"
+    )
 
 # --------------------------------------------------
 # SPEECH TO TEXT
