@@ -204,27 +204,33 @@ def transcribe_audio(audio_file):
     if client is None:
         return None, "AI connection is not configured."
 
-    try:
-
-        audio_bytes = audio_file.getvalue()
-
-        result = client.automatic_speech_recognition(
-            audio=audio_bytes,
-            model=ASR_MODEL
+        try:
+        response = client.chat.completions.create(
+            model=CHAT_MODEL,
+            messages=st.session_state.messages,
+            max_tokens=300,
+            temperature=0.7
         )
 
-        text = result.text.strip()
+        answer = (
+            response.choices[0]
+            .message
+            .content
+            .strip()
+        )
 
-        if not text:
-            return None, "I couldn't hear a clear sentence."
+        st.session_state.messages.append(
+            {
+                "role": "assistant",
+                "content": answer
+            }
+        )
 
-        return text, None
+        return answer
 
     except Exception as error:
-
-        return None, (
-            "Speech recognition failed. "
-            "Please try speaking again."
+        return (
+            f"AI model error: {type(error).__name__}: {error}"
         )
 
 
