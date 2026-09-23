@@ -5,6 +5,10 @@ import streamlit.components.v1 as components
 from huggingface_hub import InferenceClient
 
 
+# --------------------------------------------------
+# PAGE CONFIGURATION
+# --------------------------------------------------
+
 st.set_page_config(
     page_title="LENO — AI Assistant",
     page_icon="🤖",
@@ -103,7 +107,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
 st.info(
     "🎤 Record your voice below and LENO will understand and respond."
 )
@@ -120,7 +123,6 @@ if "messages" not in st.session_state:
             "content": SYSTEM_PROMPT
         }
     ]
-
 
 if "last_audio_id" not in st.session_state:
     st.session_state.last_audio_id = None
@@ -188,9 +190,13 @@ def ask_leno(user_message):
 
         return answer
 
-   except Exception as error:
-    return f"AI model error: {type(error).__name__}: {error}"
-    
+    except Exception as error:
+
+        return (
+            f"AI model error: "
+            f"{type(error).__name__}: {error}"
+        )
+
 
 # --------------------------------------------------
 # SPEECH TO TEXT
@@ -203,33 +209,31 @@ def transcribe_audio(audio_file):
     if client is None:
         return None, "AI connection is not configured."
 
-        try:
-        response = client.chat.completions.create(
-            model=CHAT_MODEL,
-            messages=st.session_state.messages,
-            max_tokens=300,
-            temperature=0.7
+    try:
+
+        audio_bytes = audio_file.getvalue()
+
+        result = client.automatic_speech_recognition(
+            audio=audio_bytes,
+            model=ASR_MODEL
         )
 
-        answer = (
-            response.choices[0]
-            .message
-            .content
-            .strip()
-        )
+        if hasattr(result, "text"):
+            text = result.text.strip()
+        else:
+            text = str(result).strip()
 
-        st.session_state.messages.append(
-            {
-                "role": "assistant",
-                "content": answer
-            }
-        )
+        if not text:
+            return None, "I couldn't understand the audio."
 
-        return answer
+        return text, None
 
     except Exception as error:
+
         return (
-            f"AI model error: {type(error).__name__}: {error}"
+            None,
+            f"Speech recognition error: "
+            f"{type(error).__name__}: {error}"
         )
 
 
@@ -362,7 +366,6 @@ if audio is not None:
 user_message = st.chat_input(
     "Or type a message..."
 )
-
 
 if user_message:
 
