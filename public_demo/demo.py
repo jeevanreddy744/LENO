@@ -17,8 +17,7 @@ st.set_page_config(
 # --------------------------------------------------
 
 CHAT_MODEL = "meta-llama/Llama-3.2-3B-Instruct"
-ASR_MODEL = "openai/whisper-large-v3-turbo"
-
+ASR_MODEL = "openai/whisper-large-v3"
 
 SYSTEM_PROMPT = """
 You are LENO, a friendly, intelligent and natural AI personal assistant.
